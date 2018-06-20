@@ -1,0 +1,177 @@
+const RuleTester = require('eslint/lib/testers/rule-tester');
+const rule = require('../../../src/rules/no-unknown-key');
+
+const ruleTester = new RuleTester({
+	parserOptions: {
+		ecmaVersion: 6,
+		ecmaFeatures: {
+			jsx: true
+		}
+	},
+	settings: {
+		'preact-i18n': {
+			languageFiles: [
+				{
+					name: 'en',
+					path: 'test/i18n/en.json'
+				}
+			],
+			textComponentRegex: '^Text(?:Alias)?$',
+			markupTextComponentRegex: '^MarkupText(?:Alias)?$',
+			withTextRegex: '^withText(?:Alias)?$'
+		}
+	}
+});
+
+
+// const options = [];
+
+ruleTester.run('no-unknown-key', rule, {
+	valid: [
+		{ code: '<Text id="helloWorld"/>' },
+		{ code: '<Text id={"helloWorld"}/>' },
+		{ code: '<Text id={prop.textId}/>' },
+		{ code: '<Text {...props} />' },
+		{ code: '<TextAlias id="helloWorld"/>' },
+		{ code: '<MarkupText id="helloWorld"/>' },
+		{ code: '<MarkupTextAlias id="helloWorld"/>' },
+		{ code: '<ShouldNotFlagForMissingKey id="foo"/>' },
+		{ code: '<Text id="missingKeyButFileIgnored" />', settings: { 'preact-i18n': { ignoreFiles: '**/*.spec.js' } }, filename: 'blah/foo.spec.js' },
+		{ code: '<Text id="pluralizedArray" plural="0" />' },
+		{ code: '<Text id="pluralizedArray" plural="1" />' },
+		{ code: '<Text id="pluralizedArray" plural="2" />' },
+		{ code: '<Text id="pluralizedNoneOneMany" plural="0" />' },
+		{ code: '<Text id="pluralizedNoneOneMany" plural="1" />' },
+		{ code: '<Text id="pluralizedNoneOneMany" plural="2" />' },
+		{ code: '<Text id="pluralizedPluralSingular" plural="0" />' },
+		{ code: '<Text id="pluralizedPluralSingular" plural="1" />' },
+		{ code: '<Text id="pluralizedPluralSingular" plural="2" />' },
+		{ code: 'withText("helloWorld,parent.nested")' },
+		{ code: 'withText({a: "helloWorld", b: "parent.nested"})' },
+		{ code: 'withTextAlais({a: "helloWorld", b: "parent.nested"})' }
+	],
+	invalid: [
+		{
+			code: '<Text id="errorForMissingFile" />',
+			settings: {
+				'preact-i18n': {
+					languageFiles: [
+						{
+							name: 'es',
+							path: 'test/i18n/es.json'
+						}
+					]
+				}
+			},
+			errors: [
+				{
+					message: "'es' language is missing",
+					type: 'Literal'
+				}
+			]
+		},
+		{
+			code: '<Text id="foo" />',
+			errors: [
+				{
+					message: "'foo' is missing from 'en' language",
+					type: 'Literal'
+				}
+			]
+		},
+		{
+			code: '<TextAlias id="foo" />',
+			errors: [
+				{
+					message: "'foo' is missing from 'en' language",
+					type: 'Literal'
+				}
+			]
+		},
+		{
+			code: '<MarkupText id="foo" />',
+			errors: [
+				{
+					message: "'foo' is missing from 'en' language",
+					type: 'Literal'
+				}
+			]
+		},
+		{
+			code: '<MarkupTextAlias id="foo" />',
+			errors: [
+				{
+					message: "'foo' is missing from 'en' language",
+					type: 'Literal'
+				}
+			]
+		},
+		{
+			code: '<Text id="badPluralizedPluralSingular" plural={1}/>',
+			errors: [
+				{
+					message: "[singular] pluralization keys are missing for key 'badPluralizedPluralSingular' in 'en' language",
+					type: 'Literal'
+				}
+			]
+		},
+		{
+			code: '<Text id="badPluralizedNoneOneMany" plural={1}/>',
+			errors: [
+				{
+					message: "[none,many] pluralization keys are missing for key 'badPluralizedNoneOneMany' in 'en' language",
+					type: 'Literal'
+				}
+			]
+		},
+		{
+			code: '<Text id="unknownPluralization" plural={1}/>',
+			errors: [
+				{
+					message: "unrecognized pluralization format for key 'unknownPluralization' in 'en' language",
+					type: 'Literal'
+				}
+			]
+		},
+		{
+			code: '<Text id="badPluralizedArray" plural={1} />',
+			errors: [
+				{
+					message: "array pluralized key 'badPluralizedArray' does not have exactly two values for [plural, singular]",
+					type: 'Literal'
+				}
+			]
+		},
+		{
+			code: 'withText("helloWorld,foo,bar")',
+			errors: [
+				{
+					message: "'foo' is missing from 'en' language",
+					type: 'Literal'
+				},
+				{
+					message: "'bar' is missing from 'en' language",
+					type: 'Literal'
+				}
+			]
+		},
+		{
+			code: 'withText({a: "helloWorld", b: "foo"})',
+			errors: [
+				{
+					message: "'foo' is missing from 'en' language",
+					type: 'Literal'
+				}
+			]
+		},
+		{
+			code: 'withTextAlias({a: "helloWorld", b: "foo"})',
+			errors: [
+				{
+					message: "'foo' is missing from 'en' language",
+					type: 'Literal'
+				}
+			]
+		}
+	]
+});

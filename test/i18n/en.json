@@ -1,0 +1,32 @@
+{
+  "helloWorld": "Hello world !",
+  "pluralizedArray": ["Many Things", "One Thing"],
+  "pluralizedNoneOneMany": {
+    "none": "No Things",
+    "one": "One Thing",
+    "many": "Many Things"
+  },
+  "pluralizedPluralSingular": {
+    "singular": "One Thing",
+    "plural": "Many Things"
+  },
+  "badPluralizedArray": ["Many Things"],
+  "badPluralizedPluralSingular": {
+    "plural": "Many Things"
+  },
+  "badPluralizedNoneOneMany": {
+    "one": "One Thing"
+  },
+  "unknownPluralization": {
+    "bar": "One Thing"
+  },
+  "templated": "Hello {{foo}}",
+  "pluralizedAndtemplated": {
+    "none": "No Things",
+    "one": "One Thing",
+    "many": "Many {{foo}}"
+  },
+  "parent": {
+    "nested": "A Nested Key"
+  }
+}

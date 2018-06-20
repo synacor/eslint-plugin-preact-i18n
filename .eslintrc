@@ -1,0 +1,6 @@
+{
+  "extends": ["eslint-config-synacor"],
+  "env": {
+    "mocha": true
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "helloWorld": "Bonjour le monde !",
+  "pluralizedArray": ["Boucoup choses", "Une chose"],
+  "pluralizedNoneOneMany": {
+    "none": "Pas de choses",
+    "one": "Une chose",
+    "many": "Boucoup choses"
+  },
+  "pluralizedPluralSingular": {
+    "singular": "Une chose",
+    "plural": "Boucoup choses"
+  },
+  "templated": "Bonjour {{foo}}",
+  "pluralizedAndtemplated": {
+    "none": "Pas de choses",
+    "one": "Une chose",
+    "many": "Boucoup {{foo}}"
+  }
+}

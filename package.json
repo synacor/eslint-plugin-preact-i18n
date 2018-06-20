@@ -1,0 +1,49 @@
+{
+  "name": "eslint-plugin-preact-i18n",
+  "version": "1.0.0",
+  "description": "eslint plugin for users of the preact-i18n library",
+  "keywords": [
+    "eslint",
+    "eslint-plugin",
+    "i18n",
+    "preact-i18n"
+  ],
+  "author": "Bill Neff <billneff79@gmail.com>",
+  "main": "lib/index.js",
+  "license": "GPL-3.0",
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/synacor/eslint-plugin-preact-i18n.git"
+  },
+  "scripts": {
+    "clean": "rimraf lib",
+    "build": "npm run clean && babel src --out-dir lib",
+    "build:watch": "babel src --watch --out-dir lib",
+    "lint": "eslint src/**/*.js test/**/*.js",
+    "test:unit": "mocha  --recursive",
+    "test:watch": "npm run test:unit -- -w",
+    "test": "npm run lint && npm run test:unit",
+    "prepublishOnly": "npm run test && npm run build"
+  },
+  "dependencies": {
+    "minimatch": "3.0.4"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0-beta.51",
+    "@babel/core": "^7.0.0-beta.51",
+    "@babel/preset-env": "^7.0.0-beta.51",
+    "babel-eslint": "^8.2.3",
+    "eslint": "^4.19.1",
+    "eslint-config-synacor": "^3.0.1",
+    "eslint-plugin-react": "^7.9.1",
+    "mocha": "^5.2.0",
+    "rimraf": "^2.6.2",
+    "sinon": "^6.0.0"
+  },
+  "peerDependencies": {
+    "eslint": "^4.0.0"
+  }
+}
