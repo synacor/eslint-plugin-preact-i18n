@@ -1,7 +1,8 @@
-const { getLangConfig, has, get, isDisallowedTextNode, getI18nAttributeNodes } = require('../../../src/utils');
-const fs = require('fs');
-const assert = require('assert');
-const sinon = require('sinon');
+import { DEFAULT_MARKUP_TEXT_COMPONENTS } from '../../../src/constants';
+import { getLangConfig, has, get, isDisallowedTextNode, getI18nAttributeNodes } from '../../../src/utils';
+import fs from 'fs';
+import assert from 'assert';
+import sinon from 'sinon';
 
 describe('utils', () => {
 
@@ -39,29 +40,60 @@ describe('utils', () => {
 						}
 					}
 				},
-				markupNodeNameRE: /^MarkupText$/
+				markupTextComponents: DEFAULT_MARKUP_TEXT_COMPONENTS
 			}), undefined);
 		});
 
 	});
 
 	describe('getI18nAttributeNodes', () => {
-		it('should return idNode if value of id attribute is Literal string', () => {
-			let idAttribute = {
-				name: { name: 'id' },
-				value: {
-					type: 'Literal',
-					value: 'foo'
-				}
-			};
+
+		const textComponents = [
+			{ nameRegex: '^Text$' } ,
+			{ nameRegex: '^Dialog$', id: 'title', plural: 'count', fields: 'data' }
+		];
+		const markupTextComponents = [
+			{ nameRegex: '^MarkupText$' } ,
+			{ nameRegex: '^DialogMarkup$', id: 'title', plural: 'count', fields: 'data' }
+		];
+
+		const createLiteralAttribute = (name) => ({
+			name: { name },
+			value: {
+				type: 'Literal',
+				value: 'foo'
+			}
+		});
+
+		it('should return empty object if node is not an i18n node we are checking', () => {
+			let idAttribute = createLiteralAttribute('id');
 			let node = {
 				openingElement: {
+					name: {
+						name: 'NonI18NNode'
+					},
 					attributes: [
 						idAttribute
 					]
 				}
 			};
-			let result = getI18nAttributeNodes(node);
+			let result = getI18nAttributeNodes({ node, textComponents, markupTextComponents });
+			assert.deepEqual(result, { });
+		});
+
+		it('should return idNode if value of id attribute is Literal string', () => {
+			let idAttribute = createLiteralAttribute('id');
+			let node = {
+				openingElement: {
+					name: {
+						name: 'Text'
+					},
+					attributes: [
+						idAttribute
+					]
+				}
+			};
+			let result = getI18nAttributeNodes({ node, textComponents, markupTextComponents });
 			assert.deepEqual(result, { idNode: idAttribute.value, pluralNode: undefined, fieldsNode: undefined });
 		});
 
@@ -78,12 +110,15 @@ describe('utils', () => {
 			};
 			let node = {
 				openingElement: {
+					name: {
+						name: 'Text'
+					},
 					attributes: [
 						idAttribute
 					]
 				}
 			};
-			let result = getI18nAttributeNodes(node);
+			let result = getI18nAttributeNodes({ node, textComponents, markupTextComponents });
 			assert.deepEqual(result, { idNode: idAttribute.value.expression, pluralNode: undefined, fieldsNode: undefined });
 		});
 
@@ -100,12 +135,15 @@ describe('utils', () => {
 			};
 			let node = {
 				openingElement: {
+					name: {
+						name: 'Text'
+					},
 					attributes: [
 						idAttribute
 					]
 				}
 			};
-			let result = getI18nAttributeNodes(node);
+			let result = getI18nAttributeNodes({ node, textComponents, markupTextComponents });
 			assert.deepEqual(result, { idNode: false, pluralNode: undefined, fieldsNode: undefined });
 		});
 
@@ -120,14 +158,57 @@ describe('utils', () => {
 			};
 			let node = {
 				openingElement: {
+					name: {
+						name: 'Text'
+					},
 					attributes: [
 						fieldsNode,
 						pluralNode
 					]
 				}
 			};
-			let result = getI18nAttributeNodes(node);
+			let result = getI18nAttributeNodes({ node, textComponents, markupTextComponents });
 			assert.deepEqual(result, { idNode: undefined, pluralNode: 'pluralNodeValue', fieldsNode: 'fieldsNodeValue' });
+		});
+
+		it('should allow for different component names and aliases for id, plural, and fields for Text components', () => {
+			let idAttribute = createLiteralAttribute('title');
+			let pluralAttribute = createLiteralAttribute('count');
+			let fieldsAttribute = createLiteralAttribute('data');
+			let node = {
+				openingElement: {
+					name: {
+						name: 'Dialog'
+					},
+					attributes: [
+						idAttribute,
+						pluralAttribute,
+						fieldsAttribute
+					]
+				}
+			};
+			let result = getI18nAttributeNodes({ node, textComponents, markupTextComponents });
+			assert.deepEqual(result, { idNode: idAttribute.value, pluralNode: pluralAttribute.value, fieldsNode: fieldsAttribute.value });
+		});
+
+		it('should allow for different component names and aliases for id, plural, and fields for MarkupText components', () => {
+			let idAttribute = createLiteralAttribute('title');
+			let pluralAttribute = createLiteralAttribute('count');
+			let fieldsAttribute = createLiteralAttribute('data');
+			let node = {
+				openingElement: {
+					name: {
+						name: 'DialogMarkup'
+					},
+					attributes: [
+						idAttribute,
+						pluralAttribute,
+						fieldsAttribute
+					]
+				}
+			};
+			let result = getI18nAttributeNodes({ node, textComponents, markupTextComponents });
+			assert.deepEqual(result, { idNode: idAttribute.value, pluralNode: pluralAttribute.value, fieldsNode: fieldsAttribute.value });
 		});
 
 	});

@@ -1,5 +1,5 @@
-const RuleTester = require('eslint/lib/testers/rule-tester');
-const rule = require('../../../src/rules/no-text-as-attribute');
+import RuleTester from 'eslint/lib/testers/rule-tester';
+import rule from '../../../src/rules/no-text-as-attribute';
 
 const ruleTester = new RuleTester({
 	parserOptions: {
@@ -10,7 +10,15 @@ const ruleTester = new RuleTester({
 	},
 	settings: {
 		'preact-i18n': {
-			ignoreFiles: '**/*.spec.js'
+			ignoreFiles: '**/*.spec.js',
+			textComponents: [
+				{ nameRegex: '^Text$' },
+				{ nameRegex: '^Dialog$', id: 'title', plural: 'count', fields: 'data' }
+			],
+			markupTextComponents: [
+				{ nameRegex: '^MarkupText$' },
+				{ nameRegex: '^DialogMarkup$', id: 'title', plural: 'count', fields: 'data' }
+			]
 		}
 	}
 });
@@ -28,7 +36,11 @@ ruleTester.run('no-text-as-attribute', rule, {
 			ignoreTextRegex: '^\\s*/\\s*$' // Test allowing something like a forward slash as a text node without i18n
 		}]
 		},
-		{ code: '<img alt="alt is not in overriden attributes list" />', options: [{ attributes: ['placeholder'] }] }
+		{ code: '<img alt="alt is not in overriden attributes list" />', options: [{ attributes: ['placeholder'] }] },
+		{ code: '<Text id="i18n ids are ignored" />' },
+		{ code: '<Dialog title="i18n ids are ignored" />' },
+		{ code: '<MarkupText id="i18n ids are ignored" />' },
+		{ code: '<DialogMarkup title="i18n ids are ignored" />' }
 	],
 	invalid: [
 		{

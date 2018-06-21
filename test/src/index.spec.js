@@ -1,5 +1,5 @@
-const assert = require('assert');
-const api = require('../../src');
+import assert from 'assert';
+import api from '../../src';
 
 
 describe('module exports', () => {

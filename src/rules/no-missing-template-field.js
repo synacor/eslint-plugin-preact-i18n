@@ -1,6 +1,6 @@
-const minimatch = require('minimatch');
-const { get, getI18nAttributeNodes, getLangConfig } = require('../utils');
-const { DEFAULT_TEXT_COMPONENT_RE, DEFAULT_MARKUP_TEXT_COMPONENT_RE } = require('../constants');
+import minimatch from 'minimatch';
+import { get, getI18nAttributeNodes, getLangConfig } from '../utils';
+import { DEFAULT_TEXT_COMPONENTS, DEFAULT_MARKUP_TEXT_COMPONENTS } from '../constants';
 
 const TEMPLATE_RE = /\{\{.*\}\}/;
 
@@ -20,28 +20,20 @@ module.exports = {
 		const config = context.settings['preact-i18n'] || {};
 		const {
 			ignoreFiles,
-			textComponentRegex=DEFAULT_TEXT_COMPONENT_RE,
-			markupTextComponentRegex=DEFAULT_MARKUP_TEXT_COMPONENT_RE
+			textComponents=DEFAULT_TEXT_COMPONENTS,
+			markupTextComponents=DEFAULT_MARKUP_TEXT_COMPONENTS
 		} = config;
-
 		if (ignoreFiles && minimatch(context.getFilename(), ignoreFiles)) return {};
 
-		const nodeNameRE = new RegExp(textComponentRegex);
-		const markupNodeNameRE = new RegExp(markupTextComponentRegex);
 
 		return {
 			JSXElement(node) {
-				let nodeName = node.openingElement.name.name;
-
-				// If it is not a preact-i18n component, ignore it
-				if (!nodeNameRE.test(nodeName) && !markupNodeNameRE.test(nodeName)) return;
-
-				let { idNode, pluralNode, fieldsNode } = getI18nAttributeNodes(node);
+				// Get the key value and pluralNode (optional) from the attributes of the JSX element
+				let { idNode, pluralNode, fieldsNode } = getI18nAttributeNodes({ node, textComponents, markupTextComponents });
 
 				if (!idNode) {
 					return;
 				}
-
 				let key = idNode.value;
 
 				getLangConfig(config).forEach(({ translation }) => {

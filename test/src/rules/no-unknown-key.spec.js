@@ -1,5 +1,5 @@
-const RuleTester = require('eslint/lib/testers/rule-tester');
-const rule = require('../../../src/rules/no-unknown-key');
+import RuleTester from 'eslint/lib/testers/rule-tester';
+import rule from '../../../src/rules/no-unknown-key';
 
 const ruleTester = new RuleTester({
 	parserOptions: {
@@ -16,8 +16,14 @@ const ruleTester = new RuleTester({
 					path: 'test/i18n/en.json'
 				}
 			],
-			textComponentRegex: '^Text(?:Alias)?$',
-			markupTextComponentRegex: '^MarkupText(?:Alias)?$',
+			textComponents: [
+				{ nameRegex: '^Text$' },
+				{ nameRegex: '^Dialog$', id: 'title', plural: 'count', fields: 'data' }
+			],
+			markupTextComponents: [
+				{ nameRegex: '^MarkupText$' },
+				{ nameRegex: '^DialogMarkup$', id: 'title', plural: 'count', fields: 'data' }
+			],
 			withTextRegex: '^withText(?:Alias)?$'
 		}
 	}
@@ -32,9 +38,9 @@ ruleTester.run('no-unknown-key', rule, {
 		{ code: '<Text id={"helloWorld"}/>' },
 		{ code: '<Text id={prop.textId}/>' },
 		{ code: '<Text {...props} />' },
-		{ code: '<TextAlias id="helloWorld"/>' },
+		{ code: '<Dialog title="helloWorld"/>' },
 		{ code: '<MarkupText id="helloWorld"/>' },
-		{ code: '<MarkupTextAlias id="helloWorld"/>' },
+		{ code: '<DialogMarkup id="helloWorld"/>' },
 		{ code: '<ShouldNotFlagForMissingKey id="foo"/>' },
 		{ code: '<Text id="missingKeyButFileIgnored" />', settings: { 'preact-i18n': { ignoreFiles: '**/*.spec.js' } }, filename: 'blah/foo.spec.js' },
 		{ code: '<Text id="pluralizedArray" plural="0" />' },
@@ -46,6 +52,8 @@ ruleTester.run('no-unknown-key', rule, {
 		{ code: '<Text id="pluralizedPluralSingular" plural="0" />' },
 		{ code: '<Text id="pluralizedPluralSingular" plural="1" />' },
 		{ code: '<Text id="pluralizedPluralSingular" plural="2" />' },
+		{ code: '<Dialog title="pluralizedPluralSingular" count="0" />' },
+		{ code: '<DialogMarkup title="pluralizedPluralSingular" count="0" />' },
 		{ code: 'withText("helloWorld,parent.nested")' },
 		{ code: 'withText({a: "helloWorld", b: "parent.nested"})' },
 		{ code: 'withTextAlais({a: "helloWorld", b: "parent.nested"})' }
@@ -80,7 +88,7 @@ ruleTester.run('no-unknown-key', rule, {
 			]
 		},
 		{
-			code: '<TextAlias id="foo" />',
+			code: '<Dialog title="foo" />',
 			errors: [
 				{
 					message: "'foo' is missing from 'en' language",
@@ -98,7 +106,7 @@ ruleTester.run('no-unknown-key', rule, {
 			]
 		},
 		{
-			code: '<MarkupTextAlias id="foo" />',
+			code: '<DialogMarkup title="foo" />',
 			errors: [
 				{
 					message: "'foo' is missing from 'en' language",
@@ -108,6 +116,24 @@ ruleTester.run('no-unknown-key', rule, {
 		},
 		{
 			code: '<Text id="badPluralizedPluralSingular" plural={1}/>',
+			errors: [
+				{
+					message: "[singular] pluralization keys are missing for key 'badPluralizedPluralSingular' in 'en' language",
+					type: 'Literal'
+				}
+			]
+		},
+		{
+			code: '<Dialog title="badPluralizedPluralSingular" count={1}/>',
+			errors: [
+				{
+					message: "[singular] pluralization keys are missing for key 'badPluralizedPluralSingular' in 'en' language",
+					type: 'Literal'
+				}
+			]
+		},
+		{
+			code: '<DialogMarkup title="badPluralizedPluralSingular" count={1}/>',
 			errors: [
 				{
 					message: "[singular] pluralization keys are missing for key 'badPluralizedPluralSingular' in 'en' language",

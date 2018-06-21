@@ -1,3 +1,6 @@
-exports.DEFAULT_TEXT_COMPONENT_RE = /^Text$/;
-exports.DEFAULT_MARKUP_TEXT_COMPONENT_RE= /^MarkupText$/;
-exports.DEFAULT_WITH_TEXT_RE= /^withText$/;
+export const DEFAULT_WITH_TEXT_RE= /^withText$/;
+export const DEFAULT_ID_ATTR = 'id';
+export const DEFAULT_PLURAL_ATTR = 'plural';
+export const DEFAULT_FIELDS_ATTR = 'fields';
+export const DEFAULT_TEXT_COMPONENTS = [ { nameRegex: '^Text$' } ];
+export const DEFAULT_MARKUP_TEXT_COMPONENTS = [ { nameRegex: '^MarkupText$' } ];

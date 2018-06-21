@@ -1,5 +1,5 @@
-const RuleTester = require('eslint/lib/testers/rule-tester');
-const rule = require('../../../src/rules/no-missing-template-field');
+import RuleTester from 'eslint/lib/testers/rule-tester';
+import rule from '../../../src/rules/no-missing-template-field';
 
 const ruleTester = new RuleTester({
 	parserOptions: {
@@ -16,8 +16,14 @@ const ruleTester = new RuleTester({
 					path: 'test/i18n/en.json'
 				}
 			],
-			textComponentRegex: '^Text(?:Alias)?$',
-			markupTextComponentRegex: '^MarkupText(?:Alias)?$',
+			textComponents: [
+				{ nameRegex: '^Text$' },
+				{ nameRegex: '^Dialog$', id: 'title', plural: 'count', fields: 'data' }
+			],
+			markupTextComponents: [
+				{ nameRegex: '^MarkupText$' },
+				{ nameRegex: '^DialogMarkup$', id: 'title', plural: 'count', fields: 'data' }
+			],
 			withTextRegex: '^withText(?:Alias)?$'
 		}
 	}
@@ -29,6 +35,8 @@ ruleTester.run('no-missing-template-field', rule, {
 		{ code: '<Text id="helloWorld" />' },
 		{ code: '<Text {...props} />' },
 		{ code: '<Text id="templated" fields={{foo: "bar"}} />' },
+		{ code: '<Dialog title="templated" data={{foo: "bar"}} />' },
+		{ code: '<DialogMarkup title="templated" data={{foo: "bar"}} />' },
 		{ code: '<Text id="templated" />', settings: { 'preact-i18n': { ignoreFiles: '**/*.spec.js' } }, filename: 'blah/foo.spec.js' },
 		{ code: '<Text id="pluralizedAndtemplated" fields={{foo: "bar"}} plural={3}/>' },
 		{ code: '<MarkupText id="templated" fields={{foo: "bar"}} />' },
@@ -54,7 +62,7 @@ ruleTester.run('no-missing-template-field', rule, {
 			]
 		},
 		{
-			code: '<TextAlias id="templated" />',
+			code: '<Dialog title="templated" />',
 			errors: [
 				{
 					message: "'templated' has template fields but no fields attribute.",
@@ -72,7 +80,7 @@ ruleTester.run('no-missing-template-field', rule, {
 			]
 		},
 		{
-			code: '<MarkupTextAlias id="templated" />',
+			code: '<DialogMarkup title="templated" />',
 			errors: [
 				{
 					message: "'templated' has template fields but no fields attribute.",
@@ -82,6 +90,24 @@ ruleTester.run('no-missing-template-field', rule, {
 		},
 		{
 			code: '<Text id="pluralizedArray" fields={{foo: "bar"}} plural={3} />',
+			errors: [
+				{
+					message: "'pluralizedArray' doesn't require any template field data.",
+					type: 'JSXElement'
+				}
+			]
+		},
+		{
+			code: '<Dialog title="pluralizedArray" data={{foo: "bar"}} count={3} />',
+			errors: [
+				{
+					message: "'pluralizedArray' doesn't require any template field data.",
+					type: 'JSXElement'
+				}
+			]
+		},
+		{
+			code: '<DialogMarkup title="pluralizedArray" data={{foo: "bar"}} count={3} />',
 			errors: [
 				{
 					message: "'pluralizedArray' doesn't require any template field data.",
