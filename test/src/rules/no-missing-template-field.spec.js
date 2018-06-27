@@ -37,6 +37,9 @@ ruleTester.run('no-missing-template-field', rule, {
 		{ code: '<Text id="helloWorld" />' },
 		{ code: '<Text {...props} />' },
 		{ code: '<Text id="templated" fields={{foo: "bar"}} />' },
+		{ code: 'const foo="templated"; <Text id={`${foo}`} fields={{foo: "bar"}} />' }, //best attempt at template string resolution
+		{ code: '<Text id={`${foo}`} />' }, //cannot resolve foo, so no error
+		{ code: 'let foo=require("blah"); <Text id={`${foo}`} />' }, //do not try to resolve if there is not exactly string literal definition
 		{ code: '<Dialog title="templated" data={{foo: "bar"}} />' },
 		{ code: '<DialogMarkup title="templated" data={{foo: "bar"}} />' },
 		{ code: '<Text id="templated" />', settings: { 'preact-i18n': { ignoreFiles: '**/*.spec.js' } }, filename: 'blah/foo.spec.js' },
@@ -47,6 +50,15 @@ ruleTester.run('no-missing-template-field', rule, {
 	invalid: [
 		{
 			code: '<Text id="helloWorld" fields={{foo: "bar"}} />',
+			errors: [
+				{
+					message: "'helloWorld' doesn't require any template field data.",
+					type: 'JSXElement'
+				}
+			]
+		},
+		{
+			code: 'const foo="hello"; <Text id={`${foo}World`} fields={{foo: "bar"}} />',
 			errors: [
 				{
 					message: "'helloWorld' doesn't require any template field data.",

@@ -134,13 +134,13 @@ module.exports = {
 			JSXElement(node) {
 
 				// Get the key value and pluralNode (optional) from the attributes of the JSX element
-				let { idNode, pluralNode } = getI18nAttributeNodes({ node, textComponents, markupTextComponents });
+				let { idNode, pluralNode, key } = getI18nAttributeNodes({ context, node, textComponents, markupTextComponents });
 
 				if (!idNode) {
 					return;
 				}
 
-				checkForMissingKey({ context, node: idNode, config, ignorePluralFormat, key: idNode.value, pluralNode });
+				checkForMissingKey({ context, node: idNode, config, ignorePluralFormat, key, pluralNode });
 			}
 		};
 	}

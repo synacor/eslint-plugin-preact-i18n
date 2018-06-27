@@ -133,7 +133,7 @@ export const getI18NComponent = ({ node, components }) => {
 	};
 };
 
-export const getI18nAttributeNodes = ({ node, textComponents, markupTextComponents }) => {
+export const getI18nAttributeNodes = ({ context, node, textComponents, markupTextComponents }) => {
 
 	//see if this is an i18n component and get the field keys from it
 	let { id: idAttr, plural: pluralAttr, fields: fieldsAttr } = getI18NComponent({ node, components: textComponents }) || {};
@@ -149,6 +149,7 @@ export const getI18nAttributeNodes = ({ node, textComponents, markupTextComponen
 
 	// Get the key value and pluralNode (optional) from the attributes of the JSX element
 	let idNode;
+	let key;
 	let pluralNode;
 	let fieldsNode;
 	attributes.forEach( ({ type, name, value })  => {
@@ -158,7 +159,51 @@ export const getI18nAttributeNodes = ({ node, textComponents, markupTextComponen
 			if (value.type === 'JSXExpressionContainer') {
 				value = value.expression;
 			}
-			idNode = value.type === 'Literal' && value;
+
+			if (value.type === 'TemplateLiteral') {
+				// Try for super basic interpretation of template literals.
+				// Anything that is a straight string, e.g. `foo` or that has
+				// very simply defined expressions that are variables, e.g.
+				// const foo="bar"; `${foo}.buzz`;
+
+
+				// This will yeild something like `${foo}.buzz` (including the backticks)
+				let templateLiteral = context.getSourceCode().getText(value);
+
+				//see if we can replace all Identifier expressions with their defined value from scope:
+				let hasNonResolvedIdentifier = value.expressions && value.expressions.some(({ type, name }) => {
+
+					//If any of the expressions are not straight varaibles references, get out
+					if (type !== 'Identifier') {
+						return true;
+					}
+
+					// Look up the scope chaing to find the definition of the variable
+					let currentScope = context.getScope();
+					let variableDefs;
+					while (!(variableDefs = currentScope.set.get(name)) && (currentScope = currentScope.upper));
+
+					//If the variable cannot be found, or does not have a single definition with a Literal value, then exit
+					let nodeInit = variableDefs && variableDefs.defs && variableDefs.defs.length === 1 && variableDefs.defs[0].node.init;
+					if (!nodeInit || nodeInit.type !== 'Literal') {
+						return true;
+					}
+
+					// otherwise, replace ${foo} with the defined value of foo in the string
+					templateLiteral = templateLiteral.replace(`\${${name}}`, nodeInit.value);
+				});
+
+				// If we could not replace every single expression in the template literal, get don't validate the node
+				if (hasNonResolvedIdentifier) return {};
+
+				idNode = value;
+				key = templateLiteral.replace(/^`|`$/g, '');
+			}
+			else if (value.type === 'Literal') {
+				idNode = value;
+				key = idNode.value;
+			}
+
 		}
 		else if (name.name === pluralAttr) {
 			pluralNode = value;
@@ -168,5 +213,5 @@ export const getI18nAttributeNodes = ({ node, textComponents, markupTextComponen
 		}
 	});
 
-	return { idNode, pluralNode, fieldsNode };
+	return { key, idNode, pluralNode, fieldsNode };
 };

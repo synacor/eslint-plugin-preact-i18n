@@ -39,6 +39,9 @@ ruleTester.run('no-unknown-key', rule, {
 		{ code: '<Text id="helloWorld"/>' },
 		{ code: '<Text id={"helloWorld"}/>' },
 		{ code: '<Text id={prop.textId}/>' },
+		{ code: 'const foo="hello"; <Text id={`${foo}World`} />' }, //best attempt at template string resolution
+		{ code: '<Text id={`${foo}World`} />' }, //cannot resolve foo, so no error
+		{ code: 'let foo=require("blah"); <Text id={`${foo}World`} />' }, //do not try to resolve if there is not exactly one string literal definition
 		{ code: '<Text {...props} />' },
 		{ code: '<Dialog title="helloWorld"/>' },
 		{ code: '<MarkupText id="helloWorld"/>' },
@@ -100,6 +103,27 @@ ruleTester.run('no-unknown-key', rule, {
 				{
 					message: "'helloWorld' is missing from 'en' language",
 					type: 'Literal'
+				}
+			]
+		},
+		{
+			code: 'const foo = "bad"; <Text id={`${foo}Key`} />',
+			settings: { 'preact-i18n': { ...settings['preact-i18n'], scopes: ['parent'] } },
+			errors: [
+				{
+					message: "'badKey' is missing from 'en' language",
+					type: 'TemplateLiteral'
+				}
+			]
+		},
+		{
+			//Test the variable being defined in an upper scope
+			code: 'const foo = "bad"; function blah() { return (<Text id={`${foo}Key`} />); } ',
+			settings: { 'preact-i18n': { ...settings['preact-i18n'], scopes: ['parent'] } },
+			errors: [
+				{
+					message: "'badKey' is missing from 'en' language",
+					type: 'TemplateLiteral'
 				}
 			]
 		},

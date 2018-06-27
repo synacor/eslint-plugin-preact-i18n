@@ -30,12 +30,11 @@ module.exports = {
 		return {
 			JSXElement(node) {
 				// Get the key value and pluralNode (optional) from the attributes of the JSX element
-				let { idNode, pluralNode, fieldsNode } = getI18nAttributeNodes({ node, textComponents, markupTextComponents });
+				let { idNode, key, pluralNode, fieldsNode } = getI18nAttributeNodes({ context, node, textComponents, markupTextComponents });
 
 				if (!idNode) {
 					return;
 				}
-				let key = idNode.value;
 
 				getLangConfig(config).forEach(({ translation }) => {
 					if (!translation) {

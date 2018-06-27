@@ -94,7 +94,7 @@ describe('utils', () => {
 				}
 			};
 			let result = getI18nAttributeNodes({ node, textComponents, markupTextComponents });
-			assert.deepEqual(result, { idNode: idAttribute.value, pluralNode: undefined, fieldsNode: undefined });
+			assert.deepEqual(result, { key: 'foo', idNode: idAttribute.value, pluralNode: undefined, fieldsNode: undefined });
 		});
 
 		it('should return JSXExpressionContainer expression for idNode if value of id attribute is JSXExpressionContainer with Literal value', () => {
@@ -119,10 +119,10 @@ describe('utils', () => {
 				}
 			};
 			let result = getI18nAttributeNodes({ node, textComponents, markupTextComponents });
-			assert.deepEqual(result, { idNode: idAttribute.value.expression, pluralNode: undefined, fieldsNode: undefined });
+			assert.deepEqual(result, { key: 'foo', idNode: idAttribute.value.expression, pluralNode: undefined, fieldsNode: undefined });
 		});
 
-		it('should return false for idNode if value of id attribute is not Literal value or JSXExpressionContainer with Literal value', () => {
+		it('should return falsey for idNode if value of id attribute is not Literal value or JSXExpressionContainer with Literal value', () => {
 			let idAttribute = {
 				name: { name: 'id' },
 				value: {
@@ -144,7 +144,7 @@ describe('utils', () => {
 				}
 			};
 			let result = getI18nAttributeNodes({ node, textComponents, markupTextComponents });
-			assert.deepEqual(result, { idNode: false, pluralNode: undefined, fieldsNode: undefined });
+			assert.deepEqual(result, { key: undefined, idNode: undefined, pluralNode: undefined, fieldsNode: undefined });
 		});
 
 		it('should return fields and plural nodes if they are present', () => {
@@ -168,7 +168,7 @@ describe('utils', () => {
 				}
 			};
 			let result = getI18nAttributeNodes({ node, textComponents, markupTextComponents });
-			assert.deepEqual(result, { idNode: undefined, pluralNode: 'pluralNodeValue', fieldsNode: 'fieldsNodeValue' });
+			assert.deepEqual(result, { key: undefined, idNode: undefined, pluralNode: 'pluralNodeValue', fieldsNode: 'fieldsNodeValue' });
 		});
 
 		it('should allow for different component names and aliases for id, plural, and fields for Text components', () => {
@@ -188,7 +188,7 @@ describe('utils', () => {
 				}
 			};
 			let result = getI18nAttributeNodes({ node, textComponents, markupTextComponents });
-			assert.deepEqual(result, { idNode: idAttribute.value, pluralNode: pluralAttribute.value, fieldsNode: fieldsAttribute.value });
+			assert.deepEqual(result, { key: 'foo', idNode: idAttribute.value, pluralNode: pluralAttribute.value, fieldsNode: fieldsAttribute.value });
 		});
 
 		it('should allow for different component names and aliases for id, plural, and fields for MarkupText components', () => {
@@ -208,7 +208,7 @@ describe('utils', () => {
 				}
 			};
 			let result = getI18nAttributeNodes({ node, textComponents, markupTextComponents });
-			assert.deepEqual(result, { idNode: idAttribute.value, pluralNode: pluralAttribute.value, fieldsNode: fieldsAttribute.value });
+			assert.deepEqual(result, { key: 'foo', idNode: idAttribute.value, pluralNode: pluralAttribute.value, fieldsNode: fieldsAttribute.value });
 		});
 
 	});
