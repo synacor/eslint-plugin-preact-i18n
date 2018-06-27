@@ -53,6 +53,27 @@ const recursiveGet = (object, keys, index) => {
 /**
  * @private
  *
+ * Get the value of the dot-notated key on an object
+ *
+ * @param {Object} object
+ * @param {String} key Dot notated, e.g. 'a.b' returns the value of {a: {b: 'foo'}} => 'foo'
+ * @param {Array} scopes An array of prefixes that should be tried when looking for keys
+ *
+ * @example has({a: {b: 'foo'}}, 'a.b') === 'foo'
+ * @example has({a: {b: 'foo'}}, 'a.buzz') === undefined
+ * @example has({a: {b: 'foo'}}, 'b', ['a']) === 'foo'
+ */
+export const get = (object, key, scopes=['']) => {
+	for (let i=0; i<scopes.length; i++) {
+		let searchKey = [...(scopes[i] && scopes[i].split('.')), ...key.split('.')];
+		let result = recursiveGet(object, searchKey, 0);
+		if (typeof result !== 'undefined') return result;
+	}
+};
+
+/**
+ * @private
+ *
  * Determine if the dot-notated key exists and has a truthy value on object
  *
  * @param {Object} object
@@ -62,20 +83,7 @@ const recursiveGet = (object, keys, index) => {
  * @example has({a: {b: ''}}, 'a.b') === false
  * @example has({a: {b: 'foo'}}, 'a.buzz') === false
  */
-export const has = (object, key) => typeof recursiveGet(object, key.split('.'), 0) !== 'undefined';
-
-/**
- * @private
- *
- * Get the value of the dot-notated key on an object
- *
- * @param {Object} object
- * @param {String} key Dot notated, e.g. 'a.b' returns the value of {a: {b: 'foo'}} => 'foo'
- *
- * @example has({a: {b: 'foo'}}, 'a.b') === 'foo'
- * @example has({a: {b: 'foo'}}, 'a.buzz') === undefined
- */
-export const get = (object, key) => recursiveGet(object, key.split('.'), 0);
+export const has = (object, key, scopes) => typeof get(object, key, scopes) !== 'undefined';
 
 const languageFileCache = {};
 

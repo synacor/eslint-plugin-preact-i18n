@@ -18,7 +18,7 @@ function checkForMissingKey({ context, node, config, key, pluralNode, ignorePlur
 
 		}
 
-		if (typeof pluralNode === 'undefined' && !has(translation, key)) {
+		if (typeof pluralNode === 'undefined' && !has(translation, key, config.scopes)) {
 			return context.report({
 				node,
 				severity: 2,
@@ -26,7 +26,7 @@ function checkForMissingKey({ context, node, config, key, pluralNode, ignorePlur
 			});
 		}
 
-		let tranlationValue = get(translation, key);
+		let tranlationValue = get(translation, key, config.scopes);
 
 		if (typeof pluralNode === 'undefined' && typeof tranlationValue !== 'string') {
 			return context.report({

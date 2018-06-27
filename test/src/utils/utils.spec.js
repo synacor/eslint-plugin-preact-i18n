@@ -224,6 +224,18 @@ describe('utils', () => {
 			assert.equal(get(object, 'foo.bar'), 'foobar');
 		});
 
+		it('should used scopes arg to prefix namespace when finding keys if present', () => {
+			const object = {
+				foo: {
+					bar: 'foobar'
+				}
+			};
+
+			assert.equal(get(object, 'bar', ['foo']), 'foobar');
+			assert.equal(get(object, 'foo.bar', ['foo']), undefined);
+		});
+
+
 		it('should return undefined if the key does not exist at the path', () => {
 			assert.equal(get({}, 'foo.bar'), undefined);
 		});
@@ -239,6 +251,16 @@ describe('utils', () => {
 			};
 
 			assert(has(object, 'foo.bar-baz'));
+		});
+
+		it('should return true if a key exists at the dot notated location using scopes if provided', () => {
+			const object = {
+				foo: {
+					'bar-baz': 'foobar'
+				}
+			};
+
+			assert(has(object, 'bar-baz', ['foo']));
 		});
 
 		it('should return false if a key does not exist at the dot notated location', () => {

@@ -1,6 +1,26 @@
 import RuleTester from 'eslint/lib/testers/rule-tester';
 import rule from '../../../src/rules/no-missing-template-field';
 
+const settings = {
+	'preact-i18n': {
+		languageFiles: [
+			{
+				name: 'en',
+				path: 'test/i18n/en.json'
+			}
+		],
+		textComponents: [
+			{ nameRegex: '^Text$' },
+			{ nameRegex: '^Dialog$', id: 'title', plural: 'count', fields: 'data' }
+		],
+		markupTextComponents: [
+			{ nameRegex: '^MarkupText$' },
+			{ nameRegex: '^DialogMarkup$', id: 'title', plural: 'count', fields: 'data' }
+		],
+		withTextRegex: '^withText(?:Alias)?$'
+	}
+};
+
 const ruleTester = new RuleTester({
 	parserOptions: {
 		ecmaVersion: 6,
@@ -8,25 +28,7 @@ const ruleTester = new RuleTester({
 			jsx: true
 		}
 	},
-	settings: {
-		'preact-i18n': {
-			languageFiles: [
-				{
-					name: 'en',
-					path: 'test/i18n/en.json'
-				}
-			],
-			textComponents: [
-				{ nameRegex: '^Text$' },
-				{ nameRegex: '^Dialog$', id: 'title', plural: 'count', fields: 'data' }
-			],
-			markupTextComponents: [
-				{ nameRegex: '^MarkupText$' },
-				{ nameRegex: '^DialogMarkup$', id: 'title', plural: 'count', fields: 'data' }
-			],
-			withTextRegex: '^withText(?:Alias)?$'
-		}
-	}
+	settings
 });
 
 
@@ -48,6 +50,21 @@ ruleTester.run('no-missing-template-field', rule, {
 			errors: [
 				{
 					message: "'helloWorld' doesn't require any template field data.",
+					type: 'JSXElement'
+				}
+			]
+		},
+		{
+			code: '<Text id="nested" fields={{foo: "bar"}} />',
+			settings: {
+				'preact-i18n': {
+					...settings['preact-i18n'],
+					scopes: ['parent']
+				}
+			},
+			errors: [
+				{
+					message: "'nested' doesn't require any template field data.",
 					type: 'JSXElement'
 				}
 			]

@@ -20,6 +20,7 @@ module.exports = {
 		const config = context.settings['preact-i18n'] || {};
 		const {
 			ignoreFiles,
+			scopes,
 			textComponents=DEFAULT_TEXT_COMPONENTS,
 			markupTextComponents=DEFAULT_MARKUP_TEXT_COMPONENTS
 		} = config;
@@ -42,7 +43,7 @@ module.exports = {
 					}
 
 					const isPluralized = !!pluralNode;
-					let values = get(translation, key);
+					let values = get(translation, key, scopes);
 
 
 					if (isPluralized) {

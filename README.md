@@ -40,7 +40,10 @@ You have to add the following lines in your `.eslintrc` file to configure this p
           "name": "en",
           "path": "i18n/en.json"
         }
-      ],
+			],
+
+			// optional Provide list of preact-i18n scopes (i.e. namespace prefixes to dot-notated keys) that should be checked when trying to find keys.  Default is no additional scopes
+			"scopes": ['', 'foo-component'],
 
       // optional time-to-live of the translations file caching (defaults to 500ms)
       "translationsCacheTTL": 300

@@ -1,6 +1,26 @@
 import RuleTester from 'eslint/lib/testers/rule-tester';
 import rule from '../../../src/rules/no-unknown-key';
 
+const settings = {
+	'preact-i18n': {
+		languageFiles: [
+			{
+				name: 'en',
+				path: 'test/i18n/en.json'
+			}
+		],
+		textComponents: [
+			{ nameRegex: '^Text$' },
+			{ nameRegex: '^Dialog$', id: 'title', plural: 'count', fields: 'data' }
+		],
+		markupTextComponents: [
+			{ nameRegex: '^MarkupText$' },
+			{ nameRegex: '^DialogMarkup$', id: 'title', plural: 'count', fields: 'data' }
+		],
+		withTextRegex: '^withText(?:Alias)?$'
+	}
+};
+
 const ruleTester = new RuleTester({
 	parserOptions: {
 		ecmaVersion: 6,
@@ -8,25 +28,7 @@ const ruleTester = new RuleTester({
 			jsx: true
 		}
 	},
-	settings: {
-		'preact-i18n': {
-			languageFiles: [
-				{
-					name: 'en',
-					path: 'test/i18n/en.json'
-				}
-			],
-			textComponents: [
-				{ nameRegex: '^Text$' },
-				{ nameRegex: '^Dialog$', id: 'title', plural: 'count', fields: 'data' }
-			],
-			markupTextComponents: [
-				{ nameRegex: '^MarkupText$' },
-				{ nameRegex: '^DialogMarkup$', id: 'title', plural: 'count', fields: 'data' }
-			],
-			withTextRegex: '^withText(?:Alias)?$'
-		}
-	}
+	settings
 });
 
 
@@ -56,7 +58,9 @@ ruleTester.run('no-unknown-key', rule, {
 		{ code: '<Dialog title="pluralizedPluralSingular" count="0" />' },
 		{ code: '<DialogMarkup title="pluralizedPluralSingular" count="0" />' },
 		{ code: '<Text id="badPluralizedPluralSingular" plural={1}/>', options: [{ ignorePluralFormat: true }] },
+		{ code: '<Text id="nested" />', settings: { 'preact-i18n': { ...settings['preact-i18n'], scopes: ['parent'] } } },
 		{ code: 'withText("helloWorld,parent.nested")' },
+		{ code: 'withText("helloWorld, nested")' , settings: { 'preact-i18n': { ...settings['preact-i18n'], scopes: ['', 'parent'] } } },
 		{ code: 'withText({a: "helloWorld", b: "parent.nested"})' },
 		{ code: 'withTextAlais({a: "helloWorld", b: "parent.nested"})' }
 	],
@@ -85,6 +89,16 @@ ruleTester.run('no-unknown-key', rule, {
 			errors: [
 				{
 					message: "'foo' is missing from 'en' language",
+					type: 'Literal'
+				}
+			]
+		},
+		{
+			code: '<Text id="helloWorld" />',
+			settings: { 'preact-i18n': { ...settings['preact-i18n'], scopes: ['parent'] } },
+			errors: [
+				{
+					message: "'helloWorld' is missing from 'en' language",
 					type: 'Literal'
 				}
 			]
