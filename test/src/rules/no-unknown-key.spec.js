@@ -44,6 +44,7 @@ ruleTester.run('no-unknown-key', rule, {
 		{ code: '<ShouldNotFlagForMissingKey id="foo"/>' },
 		{ code: '<Text id="missingKeyButFileIgnored" />', settings: { 'preact-i18n': { ignoreFiles: '**/*.spec.js' } }, filename: 'blah/foo.spec.js' },
 		{ code: '<Text id="pluralizedArray" plural="0" />' },
+		{ code: '<Text id="pluralizedArray" plural="0" />' },
 		{ code: '<Text id="pluralizedArray" plural="1" />' },
 		{ code: '<Text id="pluralizedArray" plural="2" />' },
 		{ code: '<Text id="pluralizedNoneOneMany" plural="0" />' },
@@ -54,6 +55,7 @@ ruleTester.run('no-unknown-key', rule, {
 		{ code: '<Text id="pluralizedPluralSingular" plural="2" />' },
 		{ code: '<Dialog title="pluralizedPluralSingular" count="0" />' },
 		{ code: '<DialogMarkup title="pluralizedPluralSingular" count="0" />' },
+		{ code: '<Text id="badPluralizedPluralSingular" plural={1}/>', options: [{ ignorePluralFormat: true }] },
 		{ code: 'withText("helloWorld,parent.nested")' },
 		{ code: 'withText({a: "helloWorld", b: "parent.nested"})' },
 		{ code: 'withTextAlais({a: "helloWorld", b: "parent.nested"})' }

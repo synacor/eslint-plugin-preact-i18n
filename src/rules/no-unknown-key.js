@@ -7,7 +7,7 @@ const PLURAL_KEY_FORMS = [
 	['none', 'one', 'many']
 ];
 
-function checkForMissingKey({ context, node, config, key, pluralNode }) {
+function checkForMissingKey({ context, node, config, key, pluralNode, ignorePluralFormat }) {
 	getLangConfig(config).forEach(({ name, translation }) => {
 		if (!translation) {
 			return context.report({
@@ -47,6 +47,9 @@ function checkForMissingKey({ context, node, config, key, pluralNode }) {
 				});
 			}
 
+			//Don't check any of the plural key formats if the flag is set
+			if (ignorePluralFormat ) return;
+
 			if (Array.isArray(tranlationValue)) {
 				return tranlationValue.length !== 2 && context.report({
 					node,
@@ -84,6 +87,12 @@ module.exports = {
 		},
 		schema: [
 			{
+				type: 'object',
+				properties: {
+					ignorePluralFormat: {
+						type: 'boolean'
+					}
+				},
 				additionalProperties: false
 			}
 		]
@@ -101,18 +110,21 @@ module.exports = {
 
 		const withTextRE = new RegExp(withTextRegex);
 
+		const [options={}] = context.options;
+		const { ignorePluralFormat } = options;
+
 		return {
 			CallExpression(node) {
 				if (withTextRE.test(node.callee.name)) {
 					let arg = node.arguments && node.arguments[0];
 					if (arg.type === 'Literal') {
-						arg.value.split(',').forEach(key => checkForMissingKey({ context, node: arg, config, key: key.trim() }));
+						arg.value.split(',').forEach(key => checkForMissingKey({ context, node: arg, config, ignorePluralFormat, key: key.trim() }));
 					}
 
 					if (arg.type === 'ObjectExpression') {
 						arg.properties.forEach(prop => {
 							if (prop.value.type === 'Literal') {
-								checkForMissingKey({ context, node: prop.value, config, key: prop.value.value.trim() });
+								checkForMissingKey({ context, node: prop.value, config, ignorePluralFormat, key: prop.value.value.trim() });
 							}
 						});
 					}
@@ -128,7 +140,7 @@ module.exports = {
 					return;
 				}
 
-				checkForMissingKey({ context, node: idNode, config, key: idNode.value, pluralNode });
+				checkForMissingKey({ context, node: idNode, config, ignorePluralFormat, key: idNode.value, pluralNode });
 			}
 		};
 	}

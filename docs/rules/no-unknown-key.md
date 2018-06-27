@@ -71,7 +71,7 @@ withText({a: "helloWorld", b: "foo"})
 ```
 
 
-Examples of **correct** code for this rule 
+Examples of **correct** code for this rule
 ```jsx
 //key exists for Text component
 <Text id="helloWorld"/>
@@ -96,11 +96,28 @@ withText("helloWorld,parent.nested")
 
 // withText has present keys for object argument form
 withText({a: "helloWorld", b: "parent.nested"})
+
+/* eslint preact-i18n/no-unknown-key: ["error", { ignorePluralFormat: true }] */
+<Text id="badPluralizedArray" plural={1} />
 ```
 
 ## Options
 
-This rule has no additional options
+### `ignorePluralFormat` [optional]
+Boolean, defaults to `false`.  If set to `true`, and a component utilizes the `plural` attribute, the rule validates that the key referenced is not a `string` and thus could be an appropriate pluralization value, but it does not validate the pluralization keys.  This is useful if you have other logic that ensures that some of the pluralization types in a given format would never be hit.
+
+**Ignore globally**
+```js
+{
+	"ignorePluralFormat": true
+}
+```
+
+**Ignore in a given file**
+
+```js
+/* eslint preact-i18n/no-unknown-key: ["error", { ignorePluralFormat: true }] */
+```
 
 
 [preact-i18n]: https://www.npmjs.com/package/preact-i18n
