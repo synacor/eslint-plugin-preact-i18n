@@ -1,5 +1,5 @@
 # eslint-plugin-preact-i18n
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FZimbraOS%2Feslint-plugin-preact-i18n.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FZimbraOS%2Feslint-plugin-preact-i18n?ref=badge_shield)
+[![CircleCI](https://circleci.com/gh/ZimbraOS/eslint-plugin-preact-i18n.svg?style=shield)](https://circleci.com/gh/ZimbraOS/eslint-plugin-preact-i18n) [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FZimbraOS%2Feslint-plugin-preact-i18n.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FZimbraOS%2Feslint-plugin-preact-i18n?ref=badge_shield)
 
 
 This is an [eslint](http://eslint.org/) plugin for applications using the [preact-i18n](https://github.com/synacor/preact-i18n) library.
