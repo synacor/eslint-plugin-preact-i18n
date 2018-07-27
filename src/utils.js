@@ -94,6 +94,7 @@ const languageFileCache = {};
  */
 export const getLangConfig = ({ disableCache, languageFiles, translationsCacheTTL=500 }) => languageFiles.map(({ name, path: translationPath }) => {
 	try {
+		let root = path.resolve(__dirname, '../../../');
 		let cacheKey = `${name}-${translationPath}`;
 		let cachedValue = languageFileCache[cacheKey];
 		if (!disableCache && cachedValue) return cachedValue;
@@ -102,7 +103,7 @@ export const getLangConfig = ({ disableCache, languageFiles, translationsCacheTT
 
 		const result =  {
 			name,
-			translation: JSON.parse(fs.readFileSync(path.resolve(`${process.cwd()}/${translationPath}`)).toString())
+			translation: JSON.parse(fs.readFileSync(path.resolve(`${root}/${translationPath}`)).toString())
 		};
 
 		if (!disableCache) languageFileCache[cacheKey] = result;
