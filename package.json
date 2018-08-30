@@ -32,19 +32,17 @@
     "minimatch": "3.0.4"
   },
   "devDependencies": {
-    "@babel/cli": "^7.0.0-beta.52",
-    "@babel/core": "^7.0.0-beta.52",
-    "@babel/preset-env": "^7.0.0-beta.52",
-    "@babel/register": "^7.0.0-beta.52",
-    "babel-eslint": "^8.2.5",
-    "eslint": "^4.19.1",
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/register": "^7.0.0",
+    "eslint": "^5.4.0",
     "eslint-config-synacor": "^3.0.1",
-    "eslint-plugin-react": "^7.10.0",
     "mocha": "^5.2.0",
     "rimraf": "^2.6.2",
-    "sinon": "^6.1.3"
+    "sinon": "^6.1.5"
   },
   "peerDependencies": {
-    "eslint": "^4.0.0"
+    "eslint": "^4.0.0 || ^5.0.0"
   }
 }
