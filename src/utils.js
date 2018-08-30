@@ -1,9 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import { DEFAULT_ID_ATTR, DEFAULT_PLURAL_ATTR, DEFAULT_FIELDS_ATTR } from './constants';
-import { createGlobalLinebreakMatcher } from 'eslint/lib/ast-utils';
 
-const LINE_BREAK_GLOBAL_MATCHER = createGlobalLinebreakMatcher();
+const LINE_BREAK_GLOBAL_MATCHER = /\r\n|[\r\n\u2028\u2029]/g;
 
 /**
  * Determine whether a given node contains text that is non-empty after trimming whitespace/newlines
@@ -19,7 +18,7 @@ export const isDisallowedTextNode = ({ node, parent={}, ignoreTextRE, markupText
 		node = node.expression;
 	}
 
-	let text = node.type === 'Literal' && node.value && node.value.replace && node.value.replace(LINE_BREAK_GLOBAL_MATCHER, '').trim();
+	let text = (node.type === 'Literal' || node.type === 'JSXText') && node.value && node.value.replace && node.value.replace(LINE_BREAK_GLOBAL_MATCHER, '').trim();
 	if (!text || ignoreTextRE && ignoreTextRE.test(text)) return;
 
 	// If no regular expression is defined, then this text is not allowed regardless of its ancestry nodes

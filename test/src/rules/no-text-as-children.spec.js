@@ -42,8 +42,8 @@ ruleTester.run('no-text-as-children', rule, {
 			code: '<span>Hello world !</span>',
 			errors: [
 				{
-					message: "Untranslated text 'Hello world !'",
-					type: 'Literal'
+					message: "Untranslated text 'Hello world !'"
+					// type: 'Literal' // could be Literal in ESLInt 4 or JSXText in ESLint 5
 				}
 			]
 		},
@@ -60,8 +60,8 @@ ruleTester.run('no-text-as-children', rule, {
 			code: '<span><Text id="helloWorld"/> some untranslated peer text.</span>',
 			errors: [
 				{
-					message: "Untranslated text 'some untranslated peer text.'",
-					type: 'Literal'
+					message: "Untranslated text 'some untranslated peer text.'"
+					// type: 'Literal' // could be Literal in ESLInt 4 or JSXText in ESLint 5
 				}
 			]
 		}
