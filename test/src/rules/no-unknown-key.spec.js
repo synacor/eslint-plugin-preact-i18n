@@ -197,7 +197,7 @@ ruleTester.run('no-unknown-key', rule, {
 			code: '<Text id="badPluralizedZeroOneOther" plural={1}/>',
 			errors: [
 				{
-					message: "[zero,other] pluralization keys are missing for key 'badPluralizedNoneOneMany' in 'en' language",
+					message: "[one,other] pluralization keys are missing for key 'badPluralizedZeroOneOther' in 'en' language",
 					type: 'Literal'
 				}
 			]
