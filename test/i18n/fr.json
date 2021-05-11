@@ -6,7 +6,7 @@
     "one": "Une chose",
     "many": "Boucoup choses"
   },
-	"pluralizedZeroOneOther": {
+  "pluralizedZeroOneOther": {
     "zero": "Pas de choses",
     "one": "Une chose",
     "other": "Boucoup choses"
