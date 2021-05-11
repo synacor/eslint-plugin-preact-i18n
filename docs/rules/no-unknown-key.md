@@ -16,6 +16,11 @@ Example localization file
     "one": "One Thing",
     "many": "Many Things"
   },
+  "pluralizedZeroOneOther": {
+    "zero": "No Things",
+    "one": "One Thing",
+    "other": "Many Things"
+  },
   "pluralizedPluralSingular": {
     "singular": "One Thing",
     "plural": "Many Things"
@@ -26,6 +31,9 @@ Example localization file
   },
   "badPluralizedNoneOneMany": {
     "one": "One Thing"
+  },
+  "badPluralizedZeroOneOther": {
+    "zero": "No Things"
   },
   "unknownPluralization": {
     "bar": "One Thing"
