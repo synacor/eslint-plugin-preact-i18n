@@ -22,8 +22,8 @@
   "badPluralizedNoneOneMany": {
     "one": "One Thing"
   },
-  "pluralizedZeroOneOther": {
-    "one": "One Thing",
+  "badPluralizedZeroOneOther": {
+    "zero": "No Things",
   },
   "unknownPluralization": {
     "bar": "One Thing"
