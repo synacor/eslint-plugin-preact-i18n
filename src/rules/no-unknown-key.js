@@ -4,7 +4,8 @@ import { DEFAULT_TEXT_COMPONENTS, DEFAULT_MARKUP_TEXT_COMPONENTS, DEFAULT_WITH_T
 
 const PLURAL_KEY_FORMS = [
 	['singular', 'plural'],
-	['none', 'one', 'many']
+	['none', 'one', 'many'],
+	['zero', 'one', 'other']
 ];
 
 function checkForMissingKey({ context, node, config, key, pluralNode, ignorePluralFormat }) {
