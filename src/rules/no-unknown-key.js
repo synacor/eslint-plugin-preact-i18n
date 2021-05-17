@@ -59,18 +59,36 @@ function checkForMissingKey({ context, node, config, key, pluralNode, ignorePlur
 				});
 			}
 
-			for (let i = 0; i< PLURAL_KEY_FORMS.length; i++) {
-				let matchingKeys = PLURAL_KEY_FORMS[i].filter(plural => has(translation, `${key}.${plural}`));
-				if (matchingKeys.length === PLURAL_KEY_FORMS[i].length) return;
-				let missingKeys = PLURAL_KEY_FORMS[i].filter(plural => !has(translation, `${key}.${plural}`));
-				if (missingKeys.length && missingKeys.length !== PLURAL_KEY_FORMS[i].length) {
-					return context.report({
-						node,
-						message: `[${missingKeys}] pluralization keys are missing for key '${key}' in '${name}' language`
-					});
-				}
-			}
+			const matchingKeyForms = PLURAL_KEY_FORMS.filter(keyForms => {
+				const matchingKeys = keyForms.filter(plural => has(translation, `${key}.${plural}`));
+				return (matchingKeys.length === keyForms.length);
+			});
 
+			const incompleteKeyForms = PLURAL_KEY_FORMS.filter(keyForms => {
+				let matchingKeys = keyForms.filter(plural => has(translation, `${key}.${plural}`));
+				if (matchingKeys.length === keyForms.length) return false;
+				let missingKeys = keyForms.filter(plural => !has(translation, `${key}.${plural}`));
+				return (missingKeys.length && missingKeys.length !== keyForms.length);
+			});
+			if (matchingKeyForms.length > 0) {
+				return;
+			}
+			else if (incompleteKeyForms.length > 0) {
+				// sort incomplete key forms such that the one with the least missing
+				const missingKeys = incompleteKeyForms.reduce((prevMissingKeys, keyForms) => {
+					const altMissingKeys = keyForms.filter(plural => !has(translation, `${key}.${plural}`));
+					if (!prevMissingKeys || altMissingKeys.length < prevMissingKeys.length) {
+						return altMissingKeys;
+					}
+					return prevMissingKeys;
+				}, null);
+				
+				return context.report({
+					node,
+					message: `[${missingKeys}] pluralization keys are missing for key '${key}' in '${name}' language`
+				});
+			}
+			
 			context.report({
 				node,
 				message: `unrecognized pluralization format for key '${key}' in '${name}' language`
