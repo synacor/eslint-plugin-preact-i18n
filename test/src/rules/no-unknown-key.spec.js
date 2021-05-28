@@ -55,6 +55,9 @@ ruleTester.run('no-unknown-key', rule, {
 		{ code: '<Text id="pluralizedNoneOneMany" plural="0" />' },
 		{ code: '<Text id="pluralizedNoneOneMany" plural="1" />' },
 		{ code: '<Text id="pluralizedNoneOneMany" plural="2" />' },
+		{ code: '<Text id="pluralizedZeroOneOther" plural="0" />' },
+		{ code: '<Text id="pluralizedZeroOneOther" plural="1" />' },
+		{ code: '<Text id="pluralizedZeroOneOther" plural="2" />' },
 		{ code: '<Text id="pluralizedPluralSingular" plural="0" />' },
 		{ code: '<Text id="pluralizedPluralSingular" plural="1" />' },
 		{ code: '<Text id="pluralizedPluralSingular" plural="2" />' },
@@ -186,6 +189,15 @@ ruleTester.run('no-unknown-key', rule, {
 			errors: [
 				{
 					message: "[none,many] pluralization keys are missing for key 'badPluralizedNoneOneMany' in 'en' language",
+					type: 'Literal'
+				}
+			]
+		},
+		{
+			code: '<Text id="badPluralizedZeroOneOther" plural={1}/>',
+			errors: [
+				{
+					message: "[one,other] pluralization keys are missing for key 'badPluralizedZeroOneOther' in 'en' language",
 					type: 'Literal'
 				}
 			]

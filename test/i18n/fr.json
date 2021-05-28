@@ -6,6 +6,11 @@
     "one": "Une chose",
     "many": "Boucoup choses"
   },
+  "pluralizedZeroOneOther": {
+    "zero": "Pas de choses",
+    "one": "Une chose",
+    "other": "Boucoup choses"
+  },
   "pluralizedPluralSingular": {
     "singular": "Une chose",
     "plural": "Boucoup choses"

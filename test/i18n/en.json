@@ -6,6 +6,11 @@
     "one": "One Thing",
     "many": "Many Things"
   },
+  "pluralizedZeroOneOther": {
+    "zero": "No Things",
+    "one": "One Thing",
+    "other": "Many Things"
+  },
   "pluralizedPluralSingular": {
     "singular": "One Thing",
     "plural": "Many Things"
@@ -16,6 +21,9 @@
   },
   "badPluralizedNoneOneMany": {
     "one": "One Thing"
+  },
+  "badPluralizedZeroOneOther": {
+    "zero": "No Things"
   },
   "unknownPluralization": {
     "bar": "One Thing"

@@ -4,7 +4,8 @@ import { DEFAULT_TEXT_COMPONENTS, DEFAULT_MARKUP_TEXT_COMPONENTS, DEFAULT_WITH_T
 
 const PLURAL_KEY_FORMS = [
 	['singular', 'plural'],
-	['none', 'one', 'many']
+	['none', 'one', 'many'],
+	['zero', 'one', 'other']
 ];
 
 function checkForMissingKey({ context, node, config, key, pluralNode, ignorePluralFormat }) {
@@ -58,23 +59,31 @@ function checkForMissingKey({ context, node, config, key, pluralNode, ignorePlur
 				});
 			}
 
-			for (let i = 0; i< PLURAL_KEY_FORMS.length; i++) {
-				let matchingKeys = PLURAL_KEY_FORMS[i].filter(plural => has(translation, `${key}.${plural}`));
-				if (matchingKeys.length === PLURAL_KEY_FORMS[i].length) return;
-				let missingKeys = PLURAL_KEY_FORMS[i].filter(plural => !has(translation, `${key}.${plural}`));
-				if (missingKeys.length && missingKeys.length !== PLURAL_KEY_FORMS[i].length) {
-					return context.report({
-						node,
-						message: `[${missingKeys}] pluralization keys are missing for key '${key}' in '${name}' language`
-					});
+			let missingKeys;
+			// Loop over the key forms and either find one where every plurazlization key is present (GOOD)
+			// or the first one with the fewest missing keys
+			for (let i=0; i<PLURAL_KEY_FORMS.length; i++) {
+				let keyForm = PLURAL_KEY_FORMS[i];
+				let currMissingKeys = keyForm.filter(plural => !has(translation, `${key}.${plural}`));
+
+				// If there is a form where every required pluralization key is present, it is all set
+				if (!currMissingKeys.length) return;
+
+				// If there were no matching keys, don't consider this a possible match
+				if (currMissingKeys.length === keyForm.length) continue;
+
+				// If this has the least number of missing keys so far, use it as the best match
+				if (!missingKeys || currMissingKeys.length < missingKeys.length) {
+					missingKeys = currMissingKeys;
 				}
 			}
 
 			context.report({
 				node,
-				message: `unrecognized pluralization format for key '${key}' in '${name}' language`
+				message: missingKeys ?
+					`[${missingKeys}] pluralization keys are missing for key '${key}' in '${name}' language` :
+					`unrecognized pluralization format for key '${key}' in '${name}' language`
 			});
-
 		}
 	});
 }
