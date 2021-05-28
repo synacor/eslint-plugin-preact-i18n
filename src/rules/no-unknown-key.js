@@ -59,41 +59,31 @@ function checkForMissingKey({ context, node, config, key, pluralNode, ignorePlur
 				});
 			}
 
-			const matchingKeyForms = PLURAL_KEY_FORMS.filter(keyForms => {
-				const matchingKeys = keyForms.filter(plural => has(translation, `${key}.${plural}`));
-				return (matchingKeys.length === keyForms.length);
-			});
+			let missingKeys;
+			// Loop over the key forms and either find one where every plurazlization key is present (GOOD)
+			// or the first one with the fewest missing keys
+			for (let i=0; i<PLURAL_KEY_FORMS.length; i++) {
+				let keyForm = PLURAL_KEY_FORMS[i];
+				let currMissingKeys = keyForm.filter(plural => !has(translation, `${key}.${plural}`));
 
-			const incompleteKeyForms = PLURAL_KEY_FORMS.filter(keyForms => {
-				let matchingKeys = keyForms.filter(plural => has(translation, `${key}.${plural}`));
-				if (matchingKeys.length === keyForms.length) return false;
-				let missingKeys = keyForms.filter(plural => !has(translation, `${key}.${plural}`));
-				return (missingKeys.length && missingKeys.length !== keyForms.length);
-			});
-			if (matchingKeyForms.length > 0) {
-				return;
+				// If there is a form where every required pluralization key is present, it is all set
+				if (!currMissingKeys.length) return;
+
+				// If there were no matching keys, don't consider this a possible match
+				if (currMissingKeys.length === keyForm.length) continue;
+
+				// If this has the least number of missing keys so far, use it as the best match
+				if (!missingKeys || currMissingKeys.length < missingKeys.length) {
+					missingKeys = currMissingKeys;
+				}
 			}
-			else if (incompleteKeyForms.length > 0) {
-				// sort incomplete key forms such that the one with the least missing
-				const missingKeys = incompleteKeyForms.reduce((prevMissingKeys, keyForms) => {
-					const altMissingKeys = keyForms.filter(plural => !has(translation, `${key}.${plural}`));
-					if (!prevMissingKeys || altMissingKeys.length < prevMissingKeys.length) {
-						return altMissingKeys;
-					}
-					return prevMissingKeys;
-				}, null);
-				
-				return context.report({
-					node,
-					message: `[${missingKeys}] pluralization keys are missing for key '${key}' in '${name}' language`
-				});
-			}
-			
+
 			context.report({
 				node,
-				message: `unrecognized pluralization format for key '${key}' in '${name}' language`
+				message: missingKeys ?
+					`[${missingKeys}] pluralization keys are missing for key '${key}' in '${name}' language` :
+					`unrecognized pluralization format for key '${key}' in '${name}' language`
 			});
-
 		}
 	});
 }
